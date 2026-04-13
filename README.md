@@ -5,7 +5,7 @@ Aquesta és la web corporativa de FoodLogistic S.A, una empresa fictícia dedica
 
 ## Demostració
 
-[🌐 URL de la web](https://[usuari].github.io/[nom-del-repositori])
+[🌐 URL de la web] https://bieel77.github.io/FoodLogistic/
 
 ## Tecnologies Utilitzades
 
