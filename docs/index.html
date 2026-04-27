@@ -966,9 +966,62 @@
         transition: none !important;
       }
     }
+
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .cookie-banner p {
+      margin: 0;
+      flex: 1;
+    }
+
+    .cookie-banner button {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .cookie-banner #accept-cookies {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    @media (max-width: 700px) {
+      .cookie-banner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .cookie-banner p {
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
+  <div id="cookie-banner" class="cookie-banner">
+    <p>Aquest lloc web utilitza cookies per millorar la teva experiència. Consulta la nostra <a href="politica-cookies.html">Política de Cookies</a>.</p>
+    <div>
+      <button id="accept-cookies">Acceptar</button>
+      <button id="reject-cookies">Rebutjar</button>
+    </div>
+  </div>
   <a class="skip-link" href="#contingut-principal">Saltar al contingut principal</a>
 
   <header class="site-header" id="inici">
@@ -1243,6 +1296,20 @@
                 <label for="missatge">Necessitat logística</label>
                 <textarea id="missatge" name="missatge" placeholder="Explica'ns cobertura, tipus de producte, freqüència i necessitats operatives..." required></textarea>
               </div>
+
+              <div class="field">
+                <label>
+                  <input type="checkbox" id="consent-dades" name="consent-dades" required />
+                  Accepto el tractament de les meves dades personals segons la <a href="politica-privacitat.html" target="_blank">Política de Privacitat</a>.
+                </label>
+              </div>
+
+              <div class="field">
+                <label>
+                  <input type="checkbox" id="consent-comunicacions" name="consent-comunicacions" />
+                  Autorizo l'enviament de comunicacions comercials segons l'<a href="avis-legal.html" target="_blank">Avís Legal</a>.
+                </label>
+              </div>
             </div>
 
             <p class="form-note">Aquest formulari és una demo front-end. Pots connectar-lo fàcilment a qualsevol back-end o servei de formularis.</p>
@@ -1267,6 +1334,9 @@
             <a href="#serveis">Serveis</a>
             <a href="#sobre-nosaltres">Sobre Nosaltres</a>
             <a href="#contacte">Contacte</a>
+            <a href="avis-legal.html">Avís Legal</a>
+            <a href="politica-privacitat.html">Política de Privacitat</a>
+            <a href="politica-cookies.html">Política de Cookies</a>
           </nav>
         </div>
         <div>
@@ -1293,7 +1363,10 @@
         toTop: document.getElementById('toTop'),
         currentYear: document.getElementById('currentYear'),
         form: document.getElementById('leadForm'),
-        formStatus: document.getElementById('formStatus')
+        formStatus: document.getElementById('formStatus'),
+        cookieBanner: document.getElementById('cookie-banner'),
+        acceptCookies: document.getElementById('accept-cookies'),
+        rejectCookies: document.getElementById('reject-cookies')
       };
 
       /**
@@ -1425,8 +1498,29 @@
             return;
           }
 
+          if (!selectors.form.consentDades.checked) {
+            setStatus('Has d\'acceptar el tractament de les dades personals per enviar la sol·licitud.', 'error');
+            return;
+          }
+
           setStatus('Gràcies! Hem registrat la teva sol·licitud de demostració. En un entorn real, ara s\'enviaria al servidor.', 'success');
           selectors.form.reset();
+        });
+      };
+
+      const initCookieBanner = () => {
+        if (!selectors.cookieBanner || localStorage.getItem('cookies-accepted')) return;
+
+        selectors.cookieBanner.style.display = 'flex';
+
+        selectors.acceptCookies.addEventListener('click', () => {
+          localStorage.setItem('cookies-accepted', 'true');
+          selectors.cookieBanner.style.display = 'none';
+        });
+
+        selectors.rejectCookies.addEventListener('click', () => {
+          localStorage.setItem('cookies-accepted', 'false');
+          selectors.cookieBanner.style.display = 'none';
         });
       };
 
@@ -1448,6 +1542,7 @@
         initRevealObserver();
         initBackToTop();
         initFormValidation();
+        initCookieBanner();
         initCurrentYear();
       };
       document.addEventListener('DOMContentLoaded', init);
